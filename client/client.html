@@ -2,13 +2,156 @@
 <html lang="en">
 <head>
   <title>Conrad Hindman's Project One API</title>
-  <link rel="stylesheet" type="text/css" href="/ProjectOne/client/style.css">  
+  <link rel="stylesheet" type="text/css" href="/style.css">  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+<script>
+     const parseJSON = (xhr, content) => {
+      if(xhr.response){
+      const obj = JSON.parse(xhr.response);
+      console.dir(obj);
+        if(obj.message)
+        {
+          content.innerHTML += `<p>${obj.message}</p>`;
+        }
+      }
+    };
+
+    const handleResponse = (xhr, code) => {
+        const content = document.querySelector('#content');
+
+        switch(xhr.status)
+        {
+          case 200:
+            content.innerHTML = '<b>Success</b>';
+            break;
+          case 201:
+            content.innerHTML = '<b>Create</b>';
+            break;
+          case 204:
+            content.innerHTML = '<b>Update</b>';
+            break;
+          case 400:
+            content.innerHTML = '<b>Bad Request</b>';
+            break;
+          case 404:
+            content.innerHTML = '<b>Not Found</b>';
+            break;
+          default: 
+            content.innerHTML = '<p>Error code not implemented by client</p>';
+            break;
+        }
+        parseJSON(xhr, content);
+
+
+        if(code)
+        {
+          const obj = JSON.parse(xhr.response);
+          content.innerHTML =`<p>${obj}</p>`;
+        }
+    };
+    const requestMade = (e, UserForm) =>
+    {
+      e.preventDefault();
+      
+      const url = UserForm.querySelector('#urlField').value;
+      const method = UserForm.querySelector('#methodSelect').value;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open(url, method);
+
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+      if(method === 'GET')
+      {
+        xhr.onload = () => handleResponse(xhr, true);
+        //return true;
+      }
+      else if(method === 'HEAD'){
+        xhr.onload = () => handleResponse(xhr, false);
+       // return false;
+      }
+      xhr.send();
+    }
+
+    const sendPost = (e, nameForm) => {
+      e.preventDefault();
+
+      const nameAction = nameForm.getAttribute('action');
+      const nameMethod = nameForm.getAttribute('method');
+
+      const nameField = nameForm.querySelector('#nameField');
+      const ageField = nameForm.querySelector('#ageField');
+      const commentField = nameForm.querySelector('#Comment');
+
+      const xhr = new XMLHttpRequest();
+      xhr.open(nameMethod, nameAction);
+
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+      xhr.onload = () => handleResponse(xhr);
+
+      const formData = `name=${nameField.value}&age=${ageField.value}&comment=${comment.value}`;
+      
+      xhr.send(formData);
+
+      return false;
+    };
+
+    const init = () => {
+      const nameForm = document.querySelector('#nameForm');
+      const UserForm = document.querySelector('#userForm');
+      
+      const addUser = (e) => sendPost(e, nameForm);
+      const sendForm = (e) => requestMade(e, UserForm);
+      
+      nameForm.addEventListener('submit', addUser);
+      UserForm.addEventListener('submit', UserForm);
+    };
+
+    window.onload = init;
+</script>
 </head>
 
 <body>
-    <section>
+    <section id="Head">
         <h1>Project One API</h1>
     </section>
+
+
+    <section id="top">
+      <h3>Personal Information</h3>
+      <form id="nameForm" action="/addUser" method="post">
+        <label for="name">Name: </label>
+        <input id="nameField" type="text" name="name" />
+        <label for="age">Age: </label>
+        <input id="ageField" type="number" name="age" min="0" max="100" step="1"/>
+        <br>
+        <label for="Comment">Comment: </label>
+        <br>
+        <textarea id="comment" name="comment" rows="5" cols="50">
+
+        </textarea>
+        <br>
+        <input type="submit" value="Submit" />
+      </form>
+      <form id="userForm" action="/getUsers" method="get">
+        <h4 id="Question">Were you?</h4>
+        <select id='urlField'>
+          <option value='/getUsers'>Yes</option>
+          <option value='/notReal'>No</option>
+        </select>
+        <select id="methodSelect">
+          <option value="get">GET</option>
+          <option value="head">HEAD</option>
+        </select>
+        <input type="submit" value="Send" />
+      </form>
+    </section>
+    <section id="content">
+    </section>
+
+
 </body>
 </html>
