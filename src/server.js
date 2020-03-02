@@ -3,11 +3,11 @@ const url = require('url');
 const query = require('querystring');
 const htmlHandler = require('./htmlResponse.js');
 const jsonHandler = require('./response.js');
+const imageHandler = require('./imageResponse.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const handlePost = (request, response, parsedUrl) => {
-  
   const body = [];
 
   request.on('error', (err) => {
@@ -15,11 +15,11 @@ const handlePost = (request, response, parsedUrl) => {
     response.statusCode = 400;
     response.end();
   });
-  request.on('data', (chunk) =>{
+  request.on('data', (chunk) => {
     body.push(chunk);
   });
 
-  request.on('end', ()=>{
+  request.on('end', () => {
     const bodyString = Buffer.concat(body).toString();
     const bodyParams = query.parse(bodyString);
 
@@ -29,11 +29,12 @@ const handlePost = (request, response, parsedUrl) => {
 
 const urlStruct = {
   GET: {
-  '/': htmlHandler.getIndex,
-  '/style': htmlHandler.getCss,
-  '/getUsers': jsonHandler.getUsers,
-  '/notReal': jsonHandler.notFound,
-  notFound: jsonHandler.notFound,
+    '/': htmlHandler.getIndex,
+    '/style.css': htmlHandler.getCSS,
+    '/getUsers': jsonHandler.getUsers,
+    '/UFO.jpg': imageHandler.getImage,
+    '/notReal': jsonHandler.notFound,
+    notFound: jsonHandler.notFound,
   },
   POST: {
     '/addUser': handlePost,
@@ -47,12 +48,10 @@ const urlStruct = {
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
 
-  if(urlStruct[request.method][parsedUrl.pathname])
-  {
-    urlStruct[request.method][parsedUrl.pathname](request,response);
-  }
-  else{
-    urlStruct[request.method].notFound(request,response);
+  if (urlStruct[request.method][parsedUrl.pathname]) {
+    urlStruct[request.method][parsedUrl.pathname](request, response);
+  } else {
+    urlStruct[request.method].notFound(request, response);
   }
 };
 

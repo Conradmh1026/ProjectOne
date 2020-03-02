@@ -16,6 +16,9 @@
       }
     };
 
+    const h1 = document.createElement('h1');
+    const p = document.createElement('p');
+
     const handleResponse = (xhr, code) => {
         const content = document.querySelector('#content');
 
@@ -47,6 +50,8 @@
         {
           const obj = JSON.parse(xhr.response);
           content.innerHTML =`<p>${obj}</p>`;
+          h1.textContent = `Name: ${obj.name}`;
+          p.textContent = `Age: ${obj.age}`;
         }
     };
     const requestMade = (e, UserForm) =>
@@ -76,13 +81,17 @@
 
     const sendPost = (e, nameForm) => {
       e.preventDefault();
-
+      //collects the data that was placed
       const nameAction = nameForm.getAttribute('action');
       const nameMethod = nameForm.getAttribute('method');
 
       const nameField = nameForm.querySelector('#nameField');
       const ageField = nameForm.querySelector('#ageField');
       const commentField = nameForm.querySelector('#Comment');
+      const monthField = nameForm.querySelector('#monthField');
+      const dayField = nameForm.querySelector('#dayField');
+      const yearField = nameForm.querySelector('#yearField');
+
 
       const xhr = new XMLHttpRequest();
       xhr.open(nameMethod, nameAction);
@@ -92,7 +101,7 @@
 
       xhr.onload = () => handleResponse(xhr);
 
-      const formData = `name=${nameField.value}&age=${ageField.value}&comment=${comment.value}`;
+      const formData = `name=${nameField.value}&age=${ageField.value}&comment=${comment.value}&month=${monthField.value}&day=${dayField.value}&year=${yearField.value}`;
       
       xhr.send(formData);
 
@@ -106,6 +115,7 @@
       const addUser = (e) => sendPost(e, nameForm);
       const sendForm = (e) => requestMade(e, UserForm);
       
+      //sends back the information
       nameForm.addEventListener('submit', addUser);
       UserForm.addEventListener('submit', UserForm);
     };
@@ -118,16 +128,18 @@
     <section id="Head">
         <h1>Project One API</h1>
     </section>
+    <img src="UFO.jpg" alt="UFO Alien" width="128" height="128">
 
-
-    <section id="top">
-      <h3>Personal Information</h3>
-
+    <h3 id="h3Perosna">Personal Information</h3>    
+    <div id="nameSpaceFlex">
+      
+      <section id="top">  
       <form id="nameForm" action="/addUser" method="post">
         <label for="name">Name: </label>
         <input id="nameField" type="text" name="name" />
         <label for="age">Age: </label>
         <input id="ageField" type="number" name="age" min="0" max="100" step="1"/>
+        <br>
         <br>
         <label for="Comment">Comment: </label>
         <br>
@@ -135,50 +147,59 @@
         </textarea>
 
         <br>
-
+        <br>
         <label for="month">Month: </label>
-        <select id='monthField'>
-          <option value='january'>January</option>
-          <option value='february'>February</option>
+        <br>
+        <select id='monthField'name="month">
+          <option value='January'>January</option>
+          <option value='February'>February</option>
+          <option value='March'>March</option>
+          <option value='April'>April</option>
+          <option value='May'>May</option>
+          <option value='June'>June</option>
+          <option value='July'>July</option>
+          <option value='August'>August</option>
+          <option value='September'>September</option>
+          <option value='October'>October</option>
+          <option value='November'>November</option>
+          <option value='December'>December</option>
         </select>
         <br>
-
+        <br>
         <label for="day">Day: </label>
+        <br>
           <input id="dayField" type="number" name="day" min="1" max="31" step="1"/>
+          <br>
           <br>
 
         <label for="year">Year: </label>
-        <select id='yearField'>
+        <br>
+        <select id='yearField' name="year">
           <option value='2019'>2019</option>
           <option value='2020'>2020</option>
         </select>
-
+        <br>
         <br>
 
-        <input type="submit" value="Submit" />
+        <input id="butt" type="submit" value="Submit" />
+        </section>
       </form>
+  </div>
 
-      <form id="dateForm" action="/addDate" method="post">
-        
-      </form>
-
-
+  <div id="reportSpaceFlex">
       <form id="userForm" action="/getUsers" method="get">
-        <h4 id="Question">Were you?</h4>
+        <h4 id="Question">Print Report to Screen</h4>
         <select id='urlField'>
-          <option value='/getUsers'>Yes</option>
-          <option value='/notReal'>No</option>
+          <option value='/getUsers'>Get Info</option>
         </select>
-        <select id="methodSelect">
-          <option value="get">GET</option>
-          <option value="head">HEAD</option>
-        </select>
-        <input type="submit" value="Send" />
+        
+        <input id="butt" type="submit" value="Print Report" />
       </form>
     </section>
     <section id="content">
     </section>
 
+  </div>
 
 </body>
 </html>
